@@ -1,0 +1,52 @@
+name: Fix README for non-template repository
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    if: ${{ !github.event.repository.is_template }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check if GH_PAT is available
+        id: check-gh-pat
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          if [ -z "$GH_PAT" ]; then
+            echo "GH_PAT secret is not available. Skipping further steps."
+            echo "RUN_NEXT_STEPS=false" >> $GITHUB_ENV
+          else
+            echo "RUN_NEXT_STEPS=true" >> $GITHUB_ENV
+          fi
+
+      - name: Checkout repository
+        if: ${{ env.RUN_NEXT_STEPS == 'true' }}
+        uses: actions/checkout@v2
+
+      - name: Update README.md with repository name
+        if: ${{ env.RUN_NEXT_STEPS == 'true' }}
+        run: |
+          FULL_REPO="${{ github.repository }}"
+          ORG_NAME=$(echo "${FULL_REPO}" | cut -d '/' -f 1)
+          REPO_NAME=$(echo "${FULL_REPO}" | cut -d '/' -f 2)
+          echo "# ${REPO_NAME}" > README.md
+          echo "- Your album is live at [${REPO_NAME}](https://rathnasorg.github.io/i4tow/a/${REPO_NAME}/0/${ORG_NAME}.github.io)" >> README.md
+          echo "- You can customize/selfhost and be awesome, reach me at `anand@rathnas.com`" >> README.md
+          git config user.name "cicd-bot"
+          git config user.email "cicd-bot@users.noreply.github.com"
+          git add README.md
+          git commit -m "Updated README.md [skip ci]"
+          cat README.md
+          git status
+
+      - name: Push changes
+        if: ${{ env.RUN_NEXT_STEPS == 'true' }}
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.GH_PAT }}
+          branch: main

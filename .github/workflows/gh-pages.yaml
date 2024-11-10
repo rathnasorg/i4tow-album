@@ -1,0 +1,51 @@
+name: Build and Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check if GH_PAT is available
+        id: check-gh-pat
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          if [ -z "$GH_PAT" ]; then
+            echo "GH_PAT secret is not available. Skipping further steps."
+            echo "RUN_NEXT_STEPS=false" >> $GITHUB_ENV
+          else
+            echo "RUN_NEXT_STEPS=true" >> $GITHUB_ENV
+          fi
+
+      - name: Checkout repository
+        if: ${{ env.RUN_NEXT_STEPS == 'true' }}
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        if: ${{ env.RUN_NEXT_STEPS == 'true' }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: 21
+
+      - name: Move the temp-demo-files to ./public/photos/raw2
+        if: ${{ github.event.repository.is_template && env.RUN_NEXT_STEPS == 'true'}}
+        run: |
+          mv ./temp-demo-files/* ./public/photos/raw2/
+          ls -la ./public/photos/raw2/
+
+      - name: Run Optimizer
+        if: ${{ env.RUN_NEXT_STEPS == 'true' }}
+        run: npm i --prefix ./optimizer &&  node ./optimizer/optimizer.js
+
+      - name: Deploy to GitHub Pages
+        if: ${{ env.RUN_NEXT_STEPS == 'true' }}
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GH_PAT }}
+          publish_branch: gh-pages
+          publish_dir: ./public

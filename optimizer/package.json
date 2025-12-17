@@ -8,7 +8,7 @@
     "start": "node optimizer.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "anand@rathnas.com",
+  "author": "i4tow@rathnas.com",
   "license": "ISC",
   "devDependencies": {
     "sharp": "^0.33.2",

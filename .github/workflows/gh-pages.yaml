@@ -6,7 +6,7 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -32,7 +32,18 @@ jobs:
       - name: Run Optimizer
         run: npm i --prefix ./optimizer && node ./optimizer/optimizer.js
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages (with DEPLOY_TOKEN)
+        id: deploy_with_pat
+        if: ${{ secrets.DEPLOY_TOKEN != '' }}
+        continue-on-error: true
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          personal_token: ${{ secrets.DEPLOY_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./public
+
+      - name: Deploy to GitHub Pages (with GITHUB_TOKEN)
+        if: ${{ steps.deploy_with_pat.outcome == 'skipped' || steps.deploy_with_pat.outcome == 'failure' }}
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

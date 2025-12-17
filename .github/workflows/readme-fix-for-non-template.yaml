@@ -23,7 +23,7 @@ jobs:
           REPO_NAME=$(echo "${FULL_REPO}" | cut -d '/' -f 2)
           echo "# ${REPO_NAME}" > README.md
           echo "- Your album is live at [${REPO_NAME}](https://rathnasorg.github.io/i4tow/a/${REPO_NAME}/${ORG_NAME}.github.io)" >> README.md
-          echo "- You can customize/selfhost and be awesome, reach me at anand@rathnas.com" >> README.md
+          echo "- You can customize/selfhost and be awesome, reach me at i4tow@rathnas.com" >> README.md
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add README.md

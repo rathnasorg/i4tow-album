@@ -2,7 +2,7 @@
 
 **Turn any photo folder into a beautiful, shareable gallery in seconds.**
 
-[Live Demo](https://rathnasorg.github.io/i4tow/a/i4tow-album) | [View All Albums](https://rathnasorg.github.io/i4tow/p/rathnasorg)
+[Live Demo](https://jo4.io/a/i4tow) | [View All Albums](https://rathnasorg.github.io/i4tow/p/rathnasorg)
 
 ---
 
